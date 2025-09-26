@@ -224,10 +224,10 @@
 }
 
 .featureCard {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(4px) saturate(1.25);
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 20px;
   transition: all 0.3s ease;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -235,10 +235,10 @@
 
 .featureCard:hover {
   transform: translateY(-8px);
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(6px) saturate(1.5);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .featureCard h3 {
@@ -317,19 +317,19 @@
 
 .valueItem {
   padding: 1.5rem;
-  border-left: 3px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.1);
+  border-left: 3px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(4px) saturate(1.25);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 .valueItem:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(6px) saturate(1.5);
-  border-left-color: rgba(255, 255, 255, 0.5);
+  border-left-color: rgba(255, 255, 255, 0.7);
   transform: translateX(8px);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
 }
@@ -365,9 +365,9 @@
   color: #ffffff;
   min-width: 80px;
   padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(4px) saturate(1.25);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 12px;
   text-align: center;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -574,15 +574,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, 
-    rgba(255, 255, 255, 0.2) 0%, 
-    rgba(255, 255, 255, 0.4) 25%, 
-    rgba(255, 255, 255, 0.6) 50%, 
-    rgba(255, 255, 255, 0.4) 75%, 
-    rgba(255, 255, 255, 0.2) 100%);
-  background-size: 400% 400%;
-  animation: shimmer 8s ease-in-out infinite;
-  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(4px) saturate(1.25);
 }
 
@@ -593,35 +585,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
-              radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.25) 0%, transparent 50%);
-  animation: float 6s ease-in-out infinite;
+  background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(4px) saturate(1.25);
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  33% {
-    transform: translateY(-10px) rotate(1deg);
-  }
-  66% {
-    transform: translateY(5px) rotate(-1deg);
-  }
-}
 
 .portfolioContent {
   padding: 4rem 0;
@@ -639,9 +606,9 @@
 }
 
 .portfolioItem {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(4px) saturate(1.25);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 20px;
   transition: all 0.3s ease;
   overflow: hidden;
@@ -650,15 +617,15 @@
 
 .portfolioItem:hover {
   transform: translateY(-8px);
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(6px) saturate(1.5);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .portfolioImage {
   height: 200px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(4px) saturate(1.25);
   display: flex;
   align-items: center;
@@ -699,20 +666,20 @@
 }
 
 .tag {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(4px) saturate(1.25);
   color: #ffffff;
   padding: 0.25rem 0.75rem;
   border-radius: 24px;
   font-size: 0.875rem;
   font-weight: 500;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tag:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(6px) saturate(1.5);
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -734,17 +701,17 @@
 }
 
 .skillCategory {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(4px) saturate(1.25);
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 .skillCategory:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(6px) saturate(1.5);
   transform: translateY(-4px);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
@@ -764,7 +731,7 @@
 }
 
 .skill {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(4px) saturate(1.25);
   color: #ffffff;
   padding: 0.5rem 1rem;
@@ -772,13 +739,13 @@
   font-size: 0.9rem;
   font-weight: 500;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .skill:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(6px) saturate(1.5);
   transform: scale(1.02);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
