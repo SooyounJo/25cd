@@ -1,90 +1,497 @@
-import styles from "@/styles/Home.module.css";
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 export default function AboutContent() {
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [stretchAmount, setStretchAmount] = useState(0);
+  const [stretchDirection, setStretchDirection] = useState({ x: 0, y: 0 });
+  const [snappedDot, setSnappedDot] = useState(null);
+  const [dots, setDots] = useState([]);
+  const [springAnimation, setSpringAnimation] = useState({ isAnimating: false, targetAmount: 0, velocity: 0 });
+  const circleRef = useRef(null);
+
+  // FxFilterJS 로드 확인
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log('FxFilterJS available:', !!window.FxFilter);
+      if (window.FxFilter) {
+        console.log('FxFilter methods:', Object.keys(window.FxFilter));
+      }
+    }
+  }, []);
+
+  // 레드 닷들 생성
+  useEffect(() => {
+    const generateDots = () => {
+      const newDots = [];
+      const circleCenterX = 100; // 원의 중심 X (더 작게)
+      const circleCenterY = window.innerHeight / 2; // 원의 중심 Y
+      const circleRadius = 60; // 원의 반지름 (75 -> 60)
+      const minDistance = circleRadius + 40; // 최소 거리
+      
+      // 우측으로 나란히 배치
+      const startX = circleCenterX + minDistance;
+      const endX = window.innerWidth - 50; // 우측에서 50px 안쪽으로 더 안쪽으로
+      const totalWidth = endX - startX;
+      const spacing = totalWidth / 4; // 간격을 더 줄이기 (3 -> 4로 변경)
+      
+      for (let i = 0; i < 5; i++) {
+        const x = startX + (i * spacing);
+        const y = circleCenterY;
+        
+        newDots.push({
+          id: i,
+          x: x,
+          y: y,
+          distance: Math.sqrt(Math.pow(x - circleCenterX, 2) + Math.pow(y - circleCenterY, 2)),
+          color: [
+            { r: 255, g: 80, b: 80 },   // 진한 레드
+            { r: 255, g: 100, b: 100 }, // 중간 레드
+            { r: 255, g: 120, b: 120 }, // 밝은 레드
+            { r: 255, g: 140, b: 140 }, // 연한 레드
+            { r: 255, g: 160, b: 160 }  // 매우 연한 레드
+          ][i]
+        });
+      }
+      
+      setDots(newDots);
+    };
+    
+    generateDots();
+  }, []);
+
+  const handleMouseDown = (e) => {
+    if (e.button !== 0) return; // 왼쪽 마우스 버튼만 허용
+    setIsDragging(true);
+    setDragStart({ x: e.clientX, y: e.clientY });
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleMouseMove = useCallback((e) => {
+    if (!isDragging) return;
+    
+    const deltaX = e.clientX - dragStart.x;
+    const deltaY = e.clientY - dragStart.y;
+    
+    // 드래그 거리 계산
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    const newStretchAmount = Math.max(0, distance * 1.2); // 더 민감하게
+    
+    // 드래그 방향 계산 (마우스 커서 방향)
+    const direction = {
+      x: deltaX / Math.max(distance, 1),
+      y: deltaY / Math.max(distance, 1)
+    };
+    
+    // 자동 스냅 체크 (마우스 커서 기준)
+    let closestDot = null;
+    let minDistance = Infinity;
+    
+    dots.forEach(dot => {
+      const dotDistance = Math.sqrt(
+        Math.pow(dot.x - e.clientX, 2) + Math.pow(dot.y - e.clientY, 2)
+      );
+      if (dotDistance < minDistance && dotDistance < 80) { // 마우스 커서 기준으로 스냅
+        minDistance = dotDistance;
+        closestDot = dot;
+      }
+    });
+    
+      if (closestDot) {
+        // 자동 스냅: 우측 끝이 닷에 정확히 붙도록
+        const dotDirection = {
+          x: 1, // 우측으로만 늘어나기
+          y: 0
+        };
+        setStretchDirection(dotDirection);
+        setStretchAmount(Math.max(0, closestDot.x - 110)); // 원의 중심이 닷의 중심과 맞도록
+        setSnappedDot(closestDot); // 스냅된 닷 설정
+      } else {
+        // 자유 드래그: 마우스 커서를 따라가도록
+        setStretchAmount(newStretchAmount);
+        setStretchDirection(direction);
+        setSnappedDot(null); // 스냅 해제
+      }
+  }, [isDragging, dragStart, dots]);
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    
+    // 당긴 쪽 원의 중심 계산 (우측 끝)
+    const stretchedEndX = 50 + 60 + stretchAmount; // 좌측 끝(50px) + 원 반지름(60px) + 늘어난 길이
+    const stretchedEndY = window.innerHeight / 2; // 화면 중앙
+      
+      // 가장 가까운 닷 찾기 (당긴 쪽 원의 중심 기준)
+      let closestDot = null;
+      let minDistance = Infinity;
+      
+      dots.forEach(dot => {
+        const distance = Math.sqrt(
+          Math.pow(dot.x - stretchedEndX, 2) + Math.pow(dot.y - stretchedEndY, 2)
+        );
+        if (distance < minDistance && distance < 30) { // 30px 이내에서만 정확한 스냅
+          minDistance = distance;
+          closestDot = dot;
+        }
+      });
+      
+      if (closestDot) {
+        setSnappedDot(closestDot);
+        // 닷 방향으로 늘어나기
+        const dotDirection = {
+          x: 1, // 우측으로만 늘어나기
+          y: 0
+        };
+        setStretchDirection(dotDirection);
+        
+        // 스프링 애니메이션 시작 - 원의 중심이 닷의 중심과 맞도록
+        const targetAmount = Math.max(0, closestDot.x - 150);
+        setSpringAnimation({
+          isAnimating: true,
+          targetAmount: targetAmount,
+          velocity: 0
+        });
+      } else {
+        setSnappedDot(null);
+        setStretchDirection({ x: 0, y: 0 });
+        
+        // 스프링으로 원래 위치로 복귀
+        setSpringAnimation({
+          isAnimating: true,
+          targetAmount: 0,
+          velocity: 0
+        });
+      }
+  };
+
+  useEffect(() => {
+    const handleGlobalMouseMove = (e) => {
+      if (!isDragging) return;
+      
+      e.preventDefault();
+      const deltaX = e.clientX - dragStart.x;
+      const deltaY = e.clientY - dragStart.y;
+      
+      // 드래그 거리 계산
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const newStretchAmount = Math.max(0, distance * 1.2); // 더 민감하게
+      
+      // 드래그 방향 계산 (마우스 커서 방향)
+      const direction = {
+        x: deltaX / Math.max(distance, 1),
+        y: deltaY / Math.max(distance, 1)
+      };
+      
+    // 자동 스냅 체크 (당긴 쪽 원의 중심 기준)
+    let closestDot = null;
+    let minDistance = Infinity;
+    
+    // 당긴 쪽 원의 중심 계산 (우측 끝)
+    const stretchedEndX = 50 + 75 + newStretchAmount; // 좌측 끝(50px) + 원 반지름(75px) + 늘어난 길이
+    const stretchedEndY = window.innerHeight / 2; // 화면 중앙
+    
+    dots.forEach(dot => {
+      const dotDistance = Math.sqrt(
+        Math.pow(dot.x - stretchedEndX, 2) + Math.pow(dot.y - stretchedEndY, 2)
+      );
+      if (dotDistance < minDistance && dotDistance < 30) { // 스냅 범위 조정
+        minDistance = dotDistance;
+        closestDot = dot;
+      }
+    });
+      
+      if (closestDot) {
+        // 자동 스냅: 우측 끝이 닷에 정확히 붙도록
+        const dotDirection = {
+          x: 1, // 우측으로만 늘어나기
+          y: 0
+        };
+        setStretchDirection(dotDirection);
+        setStretchAmount(Math.max(0, closestDot.x - 110)); // 원의 중심이 닷의 중심과 맞도록
+        setSnappedDot(closestDot); // 스냅된 닷 설정
+      } else {
+        // 자유 드래그: 마우스 커서를 따라가도록
+        setStretchAmount(newStretchAmount);
+        setStretchDirection(direction);
+        setSnappedDot(null); // 스냅 해제
+      }
+    };
+
+    const handleGlobalMouseUp = (e) => {
+      e.preventDefault();
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleGlobalMouseMove, { passive: false });
+      document.addEventListener('mouseup', handleGlobalMouseUp, { passive: false });
+      document.addEventListener('mouseleave', handleGlobalMouseUp, { passive: false });
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.removeEventListener('mouseleave', handleGlobalMouseUp);
+    };
+  }, [isDragging, dragStart]);
+
+  // 스프링 애니메이션
+  useEffect(() => {
+    if (!springAnimation.isAnimating) return;
+    
+    const springConfig = {
+      stiffness: 0.3,
+      damping: 0.8,
+      mass: 1
+    };
+    
+    let animationId;
+    let currentAmount = stretchAmount;
+    let velocity = springAnimation.velocity;
+    
+    const animate = () => {
+      const force = (springAnimation.targetAmount - currentAmount) * springConfig.stiffness;
+      const dampingForce = velocity * springConfig.damping;
+      const acceleration = (force - dampingForce) / springConfig.mass;
+      
+      velocity += acceleration;
+      currentAmount += velocity;
+      
+      setStretchAmount(currentAmount);
+      
+      // 애니메이션 종료 조건
+      if (Math.abs(velocity) < 0.1 && Math.abs(springAnimation.targetAmount - currentAmount) < 0.1) {
+        setStretchAmount(springAnimation.targetAmount);
+        setSpringAnimation({ isAnimating: false, targetAmount: 0, velocity: 0 });
+      } else {
+        animationId = requestAnimationFrame(animate);
+      }
+    };
+    
+    animationId = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [springAnimation.isAnimating, springAnimation.targetAmount]);
+
+  // 컴포넌트 언마운트 시 상태 초기화
+  useEffect(() => {
+    return () => {
+      setIsDragging(false);
+      setStretchAmount(0);
+    };
+  }, []);
+  // 전체 화면 붉어짐 계산
+  const maxDistance = Math.max(...dots.map(dot => dot.distance));
+  const rednessIntensity = snappedDot ? 
+    Math.min(0.3, (snappedDot.distance / maxDistance) * 0.3) : 0;
+  
+  // 원기둥 색상 변화 계산 (스냅된 닷의 색상으로)
+  const getCircleColor = () => {
+    return { r: 255, g: 80, b: 80 }; // 더 강한 레드 색상
+  };
+  
+  const circleColor = getCircleColor();
+
   return (
-    <section className={styles.aboutContent}>
-      <div className={styles.container}>
-        <div className={styles.contentGrid}>
-          <div className={styles.contentSection}>
-            <h2>우리의 비전</h2>
-            <p>
-              TechCorp는 기술의 힘으로 더 나은 미래를 만들어가는 것을 비전으로 합니다. 
-              우리는 혁신적인 솔루션을 통해 고객의 성공을 돕고, 사회에 긍정적인 변화를 만들어갑니다.
-            </p>
-          </div>
+    <>
+      <style jsx>{`
+        @keyframes pulse {
+          0% { transform: translate(-50%, -50%) scale(1); }
+          100% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+        
+        @keyframes bounce {
+          0% { transform: translate(-50%, -50%) translateY(0px); }
+          100% { transform: translate(-50%, -50%) translateY(-10px); }
+        }
+        
+        @keyframes rotate {
+          0% { transform: translate(-50%, -50%) rotate(0deg); }
+          100% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+        
+        @keyframes scale {
+          0% { transform: translate(-50%, -50%) scale(1); }
+          100% { transform: translate(-50%, -50%) scale(1.3); }
+        }
+        
+        @keyframes glow {
+          0% { 
+            box-shadow: 
+              0 0 20px rgba(255, 80, 80, 0.9),
+              0 0 40px rgba(255, 100, 100, 0.7),
+              0 0 60px rgba(255, 120, 120, 0.5),
+              0 0 80px rgba(255, 140, 140, 0.3),
+              0 0 100px rgba(255, 160, 160, 0.1);
+          }
+          100% { 
+            box-shadow: 
+              0 0 30px rgba(255, 80, 80, 1),
+              0 0 60px rgba(255, 100, 100, 0.9),
+              0 0 90px rgba(255, 120, 120, 0.7),
+              0 0 120px rgba(255, 140, 140, 0.5),
+              0 0 150px rgba(255, 160, 160, 0.3);
+          }
+        }
+      `}</style>
+      
+      <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: '#ffffff',
+        overflow: 'hidden',
+        margin: 0,
+        padding: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      {/* 글래스모피즘 배경 오버레이 */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'rgba(255, 255, 255, 0.15)',
+        backdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
+        '--fx-filter': 'blur(12px) noise(0.3, 0.8, 0.15)',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        zIndex: 0
+      }} />
+      
+      {/* 그라데이션 원 (90도 회전, 좌측 끝 상하 중앙 배치, 드래그 인터랙션) */}
+      <div
+        ref={circleRef}
+        onMouseDown={handleMouseDown}
+        style={{
+          position: 'absolute',
+          width: `${120 + stretchAmount}px`,
+          height: '120px',
+          background: `
+            linear-gradient(
+              to right,
+              rgba(255, 80, 80, 0.9) 0%,
+              rgba(255, 100, 100, 0.8) 20%,
+              rgba(255, 120, 120, 0.7) 40%,
+              rgba(255, 140, 140, 0.6) 60%,
+              rgba(255, 160, 160, 0.5) 80%,
+              rgba(255, 180, 180, 0.4) 100%
+            )
+          `,
+          borderRadius: stretchAmount > 50 ? '100px' : '50%',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          backdropFilter: 'blur(6px) saturate(1.5) brightness(1.1)',
+          boxShadow: `
+            0 0 40px rgba(255, 80, 80, 0.9),
+            0 0 80px rgba(255, 100, 100, 0.7),
+            0 0 120px rgba(255, 120, 120, 0.5),
+            0 0 160px rgba(255, 140, 140, 0.3),
+            0 0 200px rgba(255, 160, 160, 0.1),
+            inset 0 0 50px rgba(255, 80, 80, 0.4)
+          `,
+          '--fx-filter': 'blur(4px) liquid-glass(2, 10, 1) saturate(1.25)',
+          left: '50px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 1,
+          cursor: isDragging ? 'grabbing' : 'grab',
+          transition: isDragging ? 'none' : 'all 0.3s ease',
+          userSelect: 'none'
+        }}
+      />
+      
+      {/* 글로시 반사 오버레이 */}
+      <div
+        style={{
+          position: 'absolute',
+          width: `${120 + stretchAmount}px`,
+          height: '120px',
+          background: `
+            radial-gradient(
+              ellipse at 30% 20%,
+              rgba(255, 255, 255, 0.9) 0%,
+              rgba(255, 255, 255, 0.6) 20%,
+              rgba(255, 255, 255, 0.3) 40%,
+              transparent 60%
+            ),
+            linear-gradient(
+              135deg,
+              rgba(255, 255, 255, 0.8) 0%,
+              rgba(255, 255, 255, 0.4) 30%,
+              transparent 50%
+            )
+          `,
+          borderRadius: stretchAmount > 50 ? '100px' : '50%',
+          left: '50px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 2,
+          pointerEvents: 'none',
+          mixBlendMode: 'overlay'
+        }}
+      />
+      
+      {/* 레드 닷들 */}
+      {dots.map(dot => {
+        // 각 닷마다 다른 애니메이션 효과
+        const getDotAnimation = (dotId) => {
+          switch(dotId) {
+            case 0: return 'pulse'; // 펄스 애니메이션
+            case 1: return 'bounce'; // 바운스 애니메이션
+            case 2: return 'rotate'; // 로테이트 애니메이션
+            case 3: return 'scale'; // 스케일 애니메이션
+            case 4: return 'glow'; // 글로우 애니메이션
+            default: return 'none';
+          }
+        };
 
-          <div className={styles.contentSection}>
-            <h2>우리의 미션</h2>
-            <p>
-              최첨단 기술과 창의적인 아이디어를 결합하여 고객에게 최고의 가치를 제공합니다. 
-              우리는 지속적인 혁신과 품질 향상을 통해 업계를 선도하는 기업이 되고자 합니다.
-            </p>
-          </div>
-
-          <div className={styles.contentSection}>
-            <h2>핵심 가치</h2>
-            <div className={styles.valuesList}>
-              <div className={styles.valueItem}>
-                <h4>혁신</h4>
-                <p>끊임없는 연구개발과 새로운 아이디어로 미래를 준비합니다.</p>
-              </div>
-              <div className={styles.valueItem}>
-                <h4>품질</h4>
-                <p>최고 수준의 품질과 서비스를 제공하기 위해 노력합니다.</p>
-              </div>
-              <div className={styles.valueItem}>
-                <h4>신뢰</h4>
-                <p>고객과의 약속을 지키고 투명한 소통을 추구합니다.</p>
-              </div>
-              <div className={styles.valueItem}>
-                <h4>협력</h4>
-                <p>팀워크와 협력을 통해 더 큰 성과를 만들어갑니다.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.contentSection}>
-            <h2>회사 연혁</h2>
-            <div className={styles.timeline}>
-              <div className={styles.timelineItem}>
-                <div className={styles.timelineYear}>2020</div>
-                <div className={styles.timelineContent}>
-                  <h4>회사 설립</h4>
-                  <p>TechCorp가 설립되어 기술 혁신의 여정을 시작했습니다.</p>
-                </div>
-              </div>
-              <div className={styles.timelineItem}>
-                <div className={styles.timelineYear}>2021</div>
-                <div className={styles.timelineContent}>
-                  <h4>첫 번째 프로젝트 성공</h4>
-                  <p>대규모 디지털 전환 프로젝트를 성공적으로 완료했습니다.</p>
-                </div>
-              </div>
-              <div className={styles.timelineItem}>
-                <div className={styles.timelineYear}>2022</div>
-                <div className={styles.timelineContent}>
-                  <h4>기술 혁신상 수상</h4>
-                  <p>업계 최고의 기술 혁신상을 수상하며 인정받았습니다.</p>
-                </div>
-              </div>
-              <div className={styles.timelineItem}>
-                <div className={styles.timelineYear}>2023</div>
-                <div className={styles.timelineContent}>
-                  <h4>글로벌 진출</h4>
-                  <p>해외 시장 진출을 통해 글로벌 기업으로 성장했습니다.</p>
-                </div>
-              </div>
-              <div className={styles.timelineItem}>
-                <div className={styles.timelineYear}>2024</div>
-                <div className={styles.timelineContent}>
-                  <h4>미래 기술 연구소 설립</h4>
-                  <p>차세대 기술 연구를 위한 전용 연구소를 설립했습니다.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+        const animationClass = getDotAnimation(dot.id);
+        const isSnapped = snappedDot?.id === dot.id;
+        
+        return (
+          <div
+            key={dot.id}
+            style={{
+              position: 'absolute',
+              left: `${dot.x}px`,
+              top: `${dot.y}px`,
+              width: '24px',
+              height: '24px',
+              background: `rgba(${dot.color.r}, ${dot.color.g}, ${dot.color.b}, 0.6)`,
+              borderRadius: stretchAmount > 50 ? '100px' : '50%',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              backdropFilter: 'blur(4px) saturate(1.3) brightness(1.1)',
+              boxShadow: `
+                0 0 20px rgba(${dot.color.r}, ${dot.color.g}, ${dot.color.b}, 0.9),
+                0 0 40px rgba(${dot.color.r}, ${dot.color.g}, ${dot.color.b}, 0.7),
+                0 0 60px rgba(${dot.color.r}, ${dot.color.g}, ${dot.color.b}, 0.5),
+                0 0 80px rgba(${dot.color.r}, ${dot.color.g}, ${dot.color.b}, 0.3),
+                0 0 100px rgba(${dot.color.r}, ${dot.color.g}, ${dot.color.b}, 0.1)
+              `,
+              filter: 'blur(3px)',
+              '--fx-filter': 'blur(3px) noise(0.3, 0.8, 0.15)',
+              zIndex: 3,
+              transform: 'translate(-50%, -50%)',
+              opacity: isSnapped ? 0.3 : 1,
+              animation: isSnapped ? `${animationClass} 0.6s ease-in-out infinite alternate` : 'none',
+              transition: 'all 0.3s ease'
+            }}
+          />
+        );
+      })}
+      
+    </div>
+    </>
   );
 }

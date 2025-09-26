@@ -224,21 +224,25 @@
 }
 
 .featureCard {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px) saturate(1.25);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(8px) saturate(1.8) brightness(1.2);
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 20px;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 
+              0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+              0 2px 8px rgba(255, 255, 255, 0.1);
 }
 
 .featureCard:hover {
   transform: translateY(-8px);
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(6px) saturate(1.5);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.2) 100%);
+  backdrop-filter: blur(12px) saturate(2.2) brightness(1.3);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2), 
+              0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+              0 4px 16px rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .featureCard h3 {
@@ -317,21 +321,25 @@
 
 .valueItem {
   padding: 1.5rem;
-  border-left: 3px solid rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px) saturate(1.25);
+  border-left: 3px solid rgba(255, 255, 255, 0.6);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(8px) saturate(1.8) brightness(1.2);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 
+              0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+              0 2px 8px rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
 }
 
 .valueItem:hover {
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(6px) saturate(1.5);
-  border-left-color: rgba(255, 255, 255, 0.7);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.2) 100%);
+  backdrop-filter: blur(12px) saturate(2.2) brightness(1.3);
+  border-left-color: rgba(255, 255, 255, 0.8);
   transform: translateX(8px);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2), 
+              0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+              0 4px 16px rgba(255, 255, 255, 0.2);
 }
 
 .valueItem h4 {
@@ -365,12 +373,14 @@
   color: #ffffff;
   min-width: 80px;
   padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px) saturate(1.25);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(8px) saturate(1.8) brightness(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 12px;
   text-align: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 
+              0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+              0 2px 8px rgba(255, 255, 255, 0.1);
 }
 
 .timelineContent {
@@ -606,27 +616,31 @@
 }
 
 .portfolioItem {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px) saturate(1.25);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(8px) saturate(1.8) brightness(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 20px;
   transition: all 0.3s ease;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 
+              0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+              0 2px 8px rgba(255, 255, 255, 0.1);
 }
 
 .portfolioItem:hover {
   transform: translateY(-8px);
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(6px) saturate(1.5);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.2) 100%);
+  backdrop-filter: blur(12px) saturate(2.2) brightness(1.3);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2), 
+              0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+              0 4px 16px rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .portfolioImage {
   height: 200px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(4px) saturate(1.25);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(8px) saturate(1.8) brightness(1.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -666,23 +680,27 @@
 }
 
 .tag {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px) saturate(1.25);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(8px) saturate(1.8) brightness(1.2);
   color: #ffffff;
   padding: 0.25rem 0.75rem;
   border-radius: 24px;
   font-size: 0.875rem;
   font-weight: 500;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 
+              0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+              0 1px 4px rgba(255, 255, 255, 0.1);
 }
 
 .tag:hover {
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(6px) saturate(1.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.2) 100%);
+  backdrop-filter: blur(12px) saturate(2.2) brightness(1.3);
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 
+              0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+              0 2px 8px rgba(255, 255, 255, 0.2);
 }
 
 .skills {
@@ -701,20 +719,24 @@
 }
 
 .skillCategory {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px) saturate(1.25);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(8px) saturate(1.8) brightness(1.2);
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 
+              0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+              0 2px 8px rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
 }
 
 .skillCategory:hover {
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(6px) saturate(1.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.2) 100%);
+  backdrop-filter: blur(12px) saturate(2.2) brightness(1.3);
   transform: translateY(-4px);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2), 
+              0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+              0 4px 16px rgba(255, 255, 255, 0.2);
 }
 
 .skillCategory h3 {
@@ -731,24 +753,28 @@
 }
 
 .skill {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px) saturate(1.25);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(8px) saturate(1.8) brightness(1.2);
   color: #ffffff;
   padding: 0.5rem 1rem;
   border-radius: 12px;
   font-size: 0.9rem;
   font-weight: 500;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 
+              0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+              0 1px 4px rgba(255, 255, 255, 0.1);
 }
 
 .skill:hover {
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(6px) saturate(1.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.2) 100%);
+  backdrop-filter: blur(12px) saturate(2.2) brightness(1.3);
   transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 
+              0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+              0 2px 8px rgba(255, 255, 255, 0.2);
 }
 
 /* Dark mode support */
