@@ -146,11 +146,11 @@ export default function AboutContent() {
         setStretchDirection(dotDirection);
         
         // 스프링 애니메이션 시작 - 원의 중심이 닷의 중심과 맞도록
-        const targetAmount = Math.max(0, closestDot.x - 150);
+        const targetAmount = Math.max(0, closestDot.x - 110);
         setSpringAnimation({
           isAnimating: true,
           targetAmount: targetAmount,
-          velocity: 0
+          velocity: 2.0 // 초기 속도 추가로 더 찰진 느낌
         });
       } else {
         setSnappedDot(null);
@@ -160,7 +160,7 @@ export default function AboutContent() {
         setSpringAnimation({
           isAnimating: true,
           targetAmount: 0,
-          velocity: 0
+          velocity: -1.5 // 뒤로 튀는 효과
         });
       }
   };
@@ -241,9 +241,9 @@ export default function AboutContent() {
     if (!springAnimation.isAnimating) return;
     
     const springConfig = {
-      stiffness: 0.3,
-      damping: 0.8,
-      mass: 1
+      stiffness: 0.5,  // 더 강한 스프링 (0.3 -> 0.5)
+      damping: 0.7,    // 더 찰진 느낌 (0.8 -> 0.7)
+      mass: 0.8        // 더 가벼운 질량 (1 -> 0.8)
     };
     
     let animationId;
@@ -257,6 +257,18 @@ export default function AboutContent() {
       
       velocity += acceleration;
       currentAmount += velocity;
+      
+      // 바운스 효과 추가
+      if (Math.abs(velocity) < 0.2 && Math.abs(springAnimation.targetAmount - currentAmount) < 2) {
+        // 목표에 거의 도달했을 때 미세한 바운스
+        if (Math.abs(springAnimation.targetAmount - currentAmount) > 0.5) {
+          velocity += (springAnimation.targetAmount - currentAmount) * 0.05;
+        } else {
+          setStretchAmount(springAnimation.targetAmount);
+          setSpringAnimation({ isAnimating: false, targetAmount: 0, velocity: 0 });
+          return;
+        }
+      }
       
       setStretchAmount(currentAmount);
       
@@ -356,6 +368,53 @@ export default function AboutContent() {
         justifyContent: 'center'
       }}
     >
+      {/* 위에서 비치는 강한 빛 효과 */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: `
+          radial-gradient(
+            ellipse at 50% ${isDragging ? Math.max(0, 20 - stretchAmount / 20) : 20}%,
+            rgba(255, 255, 255, ${isDragging ? Math.min(0.3, stretchAmount / 200) : 0}) 0%,
+            rgba(255, 255, 255, ${isDragging ? Math.min(0.2, stretchAmount / 300) : 0}) 30%,
+            transparent 70%
+          )
+        `,
+        '--fx-filter': `
+          ${isDragging ? `
+            blur(${Math.min(3, stretchAmount / 30)}px)
+            brightness(${Math.min(1.5, 1 + stretchAmount / 100)})
+            saturate(${Math.min(2, 1 + stretchAmount / 150)})
+          ` : 'none'}
+        `,
+        zIndex: 2,
+        pointerEvents: 'none',
+        transition: 'all 0.2s ease-out'
+      }} />
+      
+      {/* 왜곡 효과 오버레이 */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'transparent',
+        '--fx-filter': `
+          ${isDragging ? `
+            blur(${Math.min(6, stretchAmount / 15)}px) 
+            liquid-glass(${Math.min(6, stretchAmount / 15)}, ${Math.min(25, stretchAmount / 10)}, 1) 
+            saturate(${Math.min(2.5, 1 + stretchAmount / 80)})
+            brightness(${Math.min(1.5, 1 + stretchAmount / 150)})
+          ` : 'none'}
+        `,
+        zIndex: 1,
+        pointerEvents: 'none'
+      }} />
+      
       {/* 글래스모피즘 배경 오버레이 */}
       <div style={{
         position: 'absolute',
@@ -364,10 +423,42 @@ export default function AboutContent() {
         width: '100%',
         height: '100%',
         background: 'rgba(255, 255, 255, 0.15)',
-        backdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
-        '--fx-filter': 'blur(12px) noise(0.3, 0.8, 0.15)',
+        backdropFilter: `blur(${12 + (isDragging ? stretchAmount / 10 : 0)}px) saturate(${1.8 + (isDragging ? stretchAmount / 50 : 0)}) brightness(${1.2 + (isDragging ? stretchAmount / 100 : 0)})`,
+        '--fx-filter': `
+          blur(${12 + (isDragging ? stretchAmount / 10 : 0)}px) 
+          noise(0.3, 0.8, 0.15) 
+          ${isDragging ? `
+            liquid-glass(${Math.min(4, stretchAmount / 25)}, ${Math.min(15, stretchAmount / 20)}, 1) 
+            brightness(${Math.min(1.8, 1 + stretchAmount / 120)})
+            contrast(${Math.min(1.3, 1 + stretchAmount / 300)})
+          ` : ''}
+        `,
         border: '1px solid rgba(255, 255, 255, 0.2)',
         zIndex: 0
+      }} />
+      
+      {/* 원 주변 왜곡 효과 */}
+      <div style={{
+        position: 'absolute',
+        left: `${50 - stretchAmount * 0.1}px`,
+        top: '50%',
+        transform: 'translateY(-50%)',
+        width: `${120 + stretchAmount + stretchAmount * 0.2}px`,
+        height: `${120 + stretchAmount * 0.1}px`,
+        background: 'transparent',
+        borderRadius: '50%',
+        '--fx-filter': `
+          ${isDragging ? `
+            blur(${Math.min(8, stretchAmount / 10)}px) 
+            liquid-glass(${Math.min(8, stretchAmount / 10)}, ${Math.min(30, stretchAmount / 8)}, 1) 
+            saturate(${Math.min(3, 1 + stretchAmount / 50)})
+            brightness(${Math.min(2, 1 + stretchAmount / 100)})
+            contrast(${Math.min(1.5, 1 + stretchAmount / 200)})
+          ` : 'none'}
+        `,
+        zIndex: 0.5,
+        pointerEvents: 'none',
+        transition: 'all 0.1s ease-out'
       }} />
       
       {/* 그라데이션 원 (90도 회전, 좌측 끝 상하 중앙 배치, 드래그 인터랙션) */}
@@ -377,7 +468,7 @@ export default function AboutContent() {
         style={{
           position: 'absolute',
           width: `${120 + stretchAmount}px`,
-          height: '120px',
+          height: `${120 + (isDragging ? Math.sin(Date.now() * 0.01) * 5 : 0)}px`,
           background: `
             linear-gradient(
               to right,
@@ -389,7 +480,9 @@ export default function AboutContent() {
               rgba(255, 180, 180, 0.4) 100%
             )
           `,
-          borderRadius: stretchAmount > 50 ? '100px' : '50%',
+          borderRadius: isDragging ? 
+            `${60 + Math.sin(Date.now() * 0.02) * 10}px` : 
+            (stretchAmount > 50 ? '100px' : '50%'),
           border: '1px solid rgba(255, 255, 255, 0.3)',
           backdropFilter: 'blur(6px) saturate(1.5) brightness(1.1)',
           boxShadow: `
@@ -416,7 +509,7 @@ export default function AboutContent() {
         style={{
           position: 'absolute',
           width: `${120 + stretchAmount}px`,
-          height: '120px',
+          height: `${120 + (isDragging ? Math.sin(Date.now() * 0.01) * 5 : 0)}px`,
           background: `
             radial-gradient(
               ellipse at 30% 20%,
@@ -432,7 +525,9 @@ export default function AboutContent() {
               transparent 50%
             )
           `,
-          borderRadius: stretchAmount > 50 ? '100px' : '50%',
+          borderRadius: isDragging ? 
+            `${60 + Math.sin(Date.now() * 0.02) * 10}px` : 
+            (stretchAmount > 50 ? '100px' : '50%'),
           left: '50px',
           top: '50%',
           transform: 'translateY(-50%)',
@@ -469,7 +564,9 @@ export default function AboutContent() {
               width: '24px',
               height: '24px',
               background: `rgba(${dot.color.r}, ${dot.color.g}, ${dot.color.b}, 0.6)`,
-              borderRadius: stretchAmount > 50 ? '100px' : '50%',
+              borderRadius: isDragging ? 
+            `${60 + Math.sin(Date.now() * 0.02) * 10}px` : 
+            (stretchAmount > 50 ? '100px' : '50%'),
               border: '1px solid rgba(255, 255, 255, 0.4)',
               backdropFilter: 'blur(4px) saturate(1.3) brightness(1.1)',
               boxShadow: `
